@@ -1,9 +1,10 @@
-import React, { use } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import stripe, { craeteCheckoutLink, createCustomerIfNull, isSubscribed } from '@/lib/stripe'
-import { PrismaClient } from '@prisma/client'
+import { Log, PrismaClient } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import Example from '@/components/Chart'
 
 async function Dashboard() {
     const prisma = new PrismaClient()
@@ -29,16 +30,13 @@ async function Dashboard() {
     const checkoutLink = await craeteCheckoutLink(String(customer))
     console.log(checkoutLink)
 
+    let logs: Log[] = []
+
     // get recent logs
-    const logs = await prisma.log.findMany({
-        where: {
-            userId: user?.id
-        },
-        orderBy: {
-            created: 'desc'
-        },
-        take: 10
-    })
+    let res = await fetch(`http://localhost:3000/api/v1/logs?user_id=${user?.id}`)
+    let data = await res.json()
+    logs = data.logs as Log[]
+
 
     let current_usage = 0
 
@@ -71,9 +69,12 @@ async function Dashboard() {
                         <p className='font-semibold p-2 border-b' >API Key</p>
                         <p className='p-2 text-sm bg-zinc-100 text-zinc-700' >{api_key}</p>
                     </div>
+                    <div>
+                        <Example />
+                    </div>
                     <div className='flex flex-col border rounded-lg'>
                         <p className='font-semibold p-2 border-b' >Logs</p>
-                        {logs.map((log) => (
+                        {logs && logs.map((log) => (
                             <div key={log.id} className='flex gap-10 border-b items-center p-2 text-sm bg-zinc-100 text-zinc-700'>
                                 <code className='p-1 rounded-md bg-zinc-200'>{log.method}</code>
                                 <p>{log.status}</p>

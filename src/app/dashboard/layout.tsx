@@ -1,9 +1,5 @@
 import React from 'react'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import { getServerSession } from 'next-auth'
-import { redirect } from 'next/navigation'
 import Header from '@/components/header'
-import { craeteCheckoutLink, createCustomerIfNull, isSubscribed } from '@/lib/stripe'
 import isUserAuthenticated from '@/lib/auth'
 
 

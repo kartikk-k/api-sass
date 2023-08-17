@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 
 
 export default async function isUserAuthenticated() {
-    const session = await getServerSession(authOptions)
-    if (!session) redirect('/api/auth/signin')
+
+    const userSession = await getServerSession(authOptions)
+    if (!userSession) return redirect('/api/auth/signin')
+
 }
