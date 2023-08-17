@@ -5,20 +5,30 @@ import { PrismaClient } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import useStore from '../../../Store'
-import { authenticateUser } from '@/lib/auth'
+import isUserAuthenticated, { authenticateUser } from '@/lib/auth'
 
 async function Dashboard() {
     const prisma = new PrismaClient()
 
+    await isUserAuthenticated()
+
     // checking for authentication
-    await authenticateUser()
+    // await authenticateUser()
 
     // get session and user from store
-    const { session, user } = useStore()
+    // const { session, user } = useStore()
+
+    const session = await getServerSession(authOptions)
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: String(session?.user?.email)
+        }
+    })
 
 
     // set api_key
-    const api_key = user!.api_key
+    const api_key = user?.api_key
 
     // get stripe customer id
     const customer = await createCustomerIfNull()

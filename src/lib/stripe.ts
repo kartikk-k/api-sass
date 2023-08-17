@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import Stripe from 'stripe'
 import { PrismaClient } from '@prisma/client'
 import { randomUUID } from 'crypto'
+import { redirect } from 'next/navigation'
 
 
 const prisma = new PrismaClient()

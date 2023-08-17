@@ -6,16 +6,16 @@ import useStore from "../../Store"
 
 const prisma = new PrismaClient()
 
-// export default async function isUserAuthenticated() {
-//     const session: Session | null = await getServerSession(authOptions)
-//     if (!session) redirect('/api/auth/signin')
+export default async function isUserAuthenticated() {
+    const session: Session | null = await getServerSession(authOptions)
+    if (!session) redirect('/api/auth/signin')
 
-//     // const user:User | null = await prisma.user.findFirst({
-//     //     where: { email: session.user?.email }
-//     // })
+    // const user:User | null = await prisma.user.findFirst({
+    //     where: { email: session.user?.email }
+    // })
 
 
-// }
+}
 
 
 
