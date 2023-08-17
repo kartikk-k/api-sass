@@ -4,20 +4,21 @@ import stripe, { craeteCheckoutLink, createCustomerIfNull, isSubscribed } from '
 import { PrismaClient } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import useStore from '../../../Store'
+import { authenticateUser } from '@/lib/auth'
 
 async function Dashboard() {
     const prisma = new PrismaClient()
 
-    const session = await getServerSession(authOptions)
+    // checking for authentication
+    await authenticateUser()
 
-    // get user data
-    const user = await prisma.user.findFirst({
-        where: { email: session?.user?.email }
-    })
+    // get session and user from store
+    const { session, user } = useStore()
+
 
     // set api_key
-    const api_key = user?.api_key
-
+    const api_key = user!.api_key
 
     // get stripe customer id
     const customer = await createCustomerIfNull()
@@ -69,14 +70,14 @@ async function Dashboard() {
                     </div>
                     <div className='flex flex-col border rounded-lg'>
                         <p className='font-semibold p-2 border-b' >API Key</p>
-                        <p className='p-2 text-sm bg-zinc-100 text-zinc-700' >{api_key}</p>
+                        <p className='p-2 text-sm bg-zinc-100 font-mono text-zinc-700' >{api_key}</p>
                     </div>
                     <div className='flex flex-col border rounded-lg'>
                         <p className='font-semibold p-2 border-b' >Logs</p>
                         {logs.map((log) => (
                             <div key={log.id} className='flex gap-10 border-b items-center p-2 text-sm bg-zinc-100 text-zinc-700'>
                                 <code className='p-1 rounded-md bg-zinc-200'>{log.method}</code>
-                                <p>{log.status}</p>
+                                <p className='font-mono'>{log.status}</p>
                                 <p>{log.created.toLocaleString()}</p>
                             </div>
                         ))}
